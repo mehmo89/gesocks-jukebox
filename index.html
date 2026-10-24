@@ -445,10 +445,12 @@
     if(!want) return;
     const i=songs.findIndex(s=>s.id.toLowerCase()===want.toLowerCase());
     if(i<0) return;
-    // make sure the shared song is actually visible: include KI if it's a KI song,
-    // and clear the Neu/Bestehend filters (both off = all releases).
-    if(songs[i].ki){ inclKI=true; $("#kiTog").classList.add("on"); }
-    fNeu=false; fBest=false; $("#fNeu").classList.remove("on"); $("#fBest").classList.remove("on");
+    // shared link start state: no shuffle, both release filters on, KI included —
+    // so the recipient sees the song in the normal FC St. Pauli order, full list.
+    shufOrder=false; $("#shufOrder").classList.remove("on");
+    inclKI=true;     $("#kiTog").classList.add("on");
+    fNeu=true;  $("#fNeu").classList.add("on");
+    fBest=true; $("#fBest").classList.add("on");
     render();
     if(src(songs[i])){ playSong(i); }             // native / preview -> plays and centers itself
     else {
