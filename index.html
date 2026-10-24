@@ -46,7 +46,7 @@
   .listwrap::-webkit-scrollbar{width:10px}
   .listwrap::-webkit-scrollbar-thumb{background:#cfc6b2;border-radius:5px;border:2px solid var(--paper);}
   .seth{font-size:16px;margin:12px 4px 6px;}
-  .row{display:grid;grid-template-columns:52px 30px 1fr auto;align-items:center;gap:12px;
+  .row{display:grid;grid-template-columns:52px 30px 1fr;align-items:center;gap:12px;
        padding:9px 10px;border-radius:var(--hd1);cursor:default;border:2px solid transparent;}
   .row + .row{margin-top:2px;}
   .row:hover:not(.active){background:var(--rot);color:#fff;border-color:var(--ink);}
@@ -139,6 +139,21 @@
   .np .lab{font-size:12px;color:var(--rot);}
   .np .nt{font-size:18px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .np .na{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  /* overflow "···" menu in the player row: Weiterfunken / Kiek mol / YouTube as text items */
+  .more{position:relative;flex:0 0 auto;align-self:center;}
+  .morebtn{font-family:var(--font);font-size:18px;line-height:1;cursor:pointer;color:var(--muted);
+    background:transparent;border:0;border-radius:6px;
+    width:28px;height:28px;display:flex;align-items:center;justify-content:center;padding:0;}
+  .morebtn:hover{background:transparent;color:var(--rot);}
+  .morebtn[hidden]{display:none;}
+  .menu{position:absolute;right:0;bottom:calc(100% + 8px);min-width:170px;z-index:20;
+    background:var(--paper2);border:3px solid var(--ink);border-radius:10px;
+    box-shadow:4px 5px 0 rgba(0,0,0,.2);padding:6px;display:flex;flex-direction:column;gap:4px;}
+  .menu[hidden]{display:none;}
+  .mitem{font-family:var(--font);font-size:15px;text-align:left;cursor:pointer;color:var(--ink);
+    background:transparent;border:0;border-radius:7px;padding:9px 12px;white-space:nowrap;text-decoration:none;display:block;}
+  .mitem:hover{background:var(--rot);color:#fff;}
+  .mitem[hidden]{display:none;}
   .scrub{display:flex;align-items:center;gap:10px;margin:8px 0 10px;}
   .scrub .time{font-size:12px;color:var(--muted);width:34px;}
   .track{flex:1;height:16px;border:3px solid var(--ink);border-radius:var(--hd1);padding:2px;cursor:pointer;}
@@ -150,7 +165,7 @@
   .tp .big{width:64px;height:64px;background:var(--rot);color:#fff;}
   .tp .big:hover{background:var(--rot-d);}
   .tp .rnd svg{width:22px;height:22px;fill:currentColor;}
-  .tp .tog{font-size:14px;padding:8px 14px;border-radius:var(--hd2);}
+  .tp .tog{font-size:14px;padding:8px 16px;border-radius:999px;}
   .tp .tog.on{background:var(--rot);color:#fff;}
   .tp button:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(216,53,43,.4);}
 
@@ -176,21 +191,20 @@
     /* list takes the remaining height so several songs are visible */
     .listwrap{flex:1 1 auto;min-height:0;padding:4px 12px 8px;}
     .seth{margin:10px 2px 6px;font-size:15px;}
-    /* song row: play on the left, title+artist top-right, action buttons stacked BELOW */
-    .row{grid-template-columns:48px 1fr;grid-template-areas:"play meta" "play right";
-         gap:4px 12px;padding:9px 8px;}
-    .row .pbtn{grid-area:play;align-self:start;margin-top:2px;}
+    /* song row: play on the left, title+artist on the right */
+    .row{grid-template-columns:48px 1fr;grid-template-areas:"play meta";
+         gap:4px 12px;padding:9px 8px;align-items:center;}
+    .row .pbtn{grid-area:play;align-self:center;}
     .num{display:none;}
     .meta{grid-area:meta;min-width:0;}
-    .right{grid-area:right;justify-self:start;flex-wrap:wrap;gap:6px;margin-top:2px;}
     .title{font-size:15px;}
     .artist{font-size:12px;}
     /* bigger tap targets (Apple HIG >=44px) */
     .pbtn{width:46px;height:46px;}
-    /* icon-only row buttons on phones: hide the text label, keep just the icon */
-    .shr .lbl,.fcsp .lbl,.ytbtn .lbl{display:none;}
-    .shr,.fcsp,.ytbtn{padding:8px 10px;font-size:12px;gap:0;min-width:40px;justify-content:center;}
-    .shr svg,.fcsp svg,.ytbtn svg{width:17px!important;height:17px!important;vertical-align:-3px;}
+    /* player action buttons (now in the player bar) — keep labels, size for touch */
+    /* overflow menu button fits the compact mobile player */
+    .morebtn{width:44px;height:44px;font-size:19px;}
+    .menu{min-width:160px;}
     /* fluid YouTube pane — never overflow */
     .ytbox{width:100%;}
     .ytbox iframe{width:100%;height:auto;aspect-ratio:16/9;}
@@ -256,9 +270,16 @@
         <circle cx="40" cy="42" r="9" fill="none" stroke="#1a1a1a" stroke-width="3"></circle><circle cx="63" cy="40" r="9" fill="none" stroke="#1a1a1a" stroke-width="3"></circle>
       </svg>
       <div class="info">
-        <div class="lab">♪ läuft…</div>
-        <div class="nt" id="npt">— nichts ausgewählt —</div>
+        <div class="nt"><span id="npt">— nichts ausgewählt —</span></div>
         <div class="na" id="npa"></div>
+      </div>
+      <div class="more">
+        <button class="morebtn" id="moreBtn" title="Aktionen" aria-label="Aktionen" aria-haspopup="true" aria-expanded="false">···</button>
+        <div class="menu" id="actMenu" role="menu" hidden>
+          <button class="mitem" id="pShr" role="menuitem">Weiterfunken</button>
+          <a class="mitem" id="pFcsp" role="menuitem" target="_blank" rel="noopener">Kiek mol</a>
+          <button class="mitem" id="pYt" role="menuitem" hidden>YouTube</button>
+        </div>
       </div>
     </div>
     <div class="scrub">
@@ -365,20 +386,12 @@
       let note="";
       if(isPreview(s)) note=` · <span style="color:var(--rot)">♪ 30s Vorschau</span>`;
       else if(!nativeOk) note=` · <span style="color:var(--rot)">nur extern</span>`;
-      // YouTube: toggle an inline embedded player (full song) in the row
-      const ytBtn = s.yt ? `<button class="ytbtn" data-yt="${i}" title="Ganzes Lied per YouTube" aria-label="YouTube">${ICON_YT}<span class="lbl">YouTube</span></button>` : '';
-      // bandcamp / other external link when there is no youtube and no native source
-      const extLink = (!nativeOk && !s.yt && s.ext) ? `<a class="ext" href="${s.ext}" target="_blank" rel="noopener">↗ extern</a>` : '';
-      // Share this song (link that opens the jukebox and auto-plays it)
-      const shrBtn = `<button class="shr" data-shr="${i}" title="Song-Link teilen" aria-label="Weiterfunken">${ICON_SHARE}<span class="lbl">Weiterfunken</span></button>`;
-      // Link to this song on the FC St. Pauli website
-      const fcspBtn = `<a class="fcsp" href="${fcspUrl(s)}" target="_blank" rel="noopener" title="Auf fcstpauli.com ansehen" aria-label="Kiek mol">${ICON_ANCHOR}<span class="lbl">Kiek mol</span></a>`;
+      // setlist rows now show ONLY song details; actions live in the player bar below.
       row.innerHTML=`${btn}<div class="num">${pos+1}</div>
         <div class="meta"><div class="title"><span class="t">${s.t}</span>
           <span class="tag${s.ki?' ki':''}">${s.ki?'mit KI':'ohne KI'}</span></div>
           <div class="artist">${s.a} · <span class="sid">${s.id}</span>${note}</div>
-          <div class="ytslot" id="ytslot-${i}"></div></div>
-        <div class="right">${shrBtn}${fcspBtn}${ytBtn}${extLink}</div>`;
+          <div class="ytslot" id="ytslot-${i}"></div></div>`;
       list.appendChild(row);
     });
     if(ytOpen>=0){ const slot=document.getElementById("ytslot-"+ytOpen); if(slot) mountYouTube(ytOpen, slot); }
@@ -403,9 +416,31 @@
     cur=i; audio.src=u;
     $("#npt").textContent=s.t;
     $("#npa").textContent=s.a+" · "+(s.ki?"mit KI":"ohne KI")+(isPreview(s)?" · 30s Vorschau":"");
+    updatePlayerActions(i);
     audio.play().catch(()=>{}); render();
     scrollActiveIntoView();
   }
+
+  // ---- player overflow menu (Weiterfunken / Kiek mol / YouTube) ----
+  // Target = the current song, or (if none selected yet) the first playable/visible song.
+  function menuTarget(){
+    if(cur>=0) return cur;
+    const pl=playableIdx(); if(pl.length) return pl[0];
+    const vis=visible(); return vis.length ? vis[0].i : -1;
+  }
+  function updatePlayerActions(i){ /* kept for call sites; menu wires itself on open */ }
+  function wireMenu(){
+    const i=menuTarget(); if(i<0) return;
+    const s=songs[i];
+    $("#pShr").onclick=()=>{ share(i, $("#pShr")); closeMenu(); };
+    const fc=$("#pFcsp"); fc.href=fcspUrl(s); fc.onclick=()=>closeMenu();
+    const yt=$("#pYt");
+    if(s.yt){ yt.hidden=false; yt.onclick=()=>{ openYouTube(i); closeMenu(); }; }
+    else { yt.hidden=true; }
+  }
+  function openMenu(){ wireMenu(); $("#actMenu").hidden=false; $("#moreBtn").setAttribute("aria-expanded","true"); }
+  function closeMenu(){ const m=$("#actMenu"); if(m) m.hidden=true; const b=$("#moreBtn"); if(b) b.setAttribute("aria-expanded","false"); }
+  function toggleMenu(){ $("#actMenu").hidden ? openMenu() : closeMenu(); }
   // keep the currently playing row centered in the list so the user always sees where they are
   function scrollActiveIntoView(){
     requestAnimationFrame(()=>{
@@ -479,6 +514,11 @@
   $("#pp").onclick=toggle; $("#prev").onclick=prev; $("#next").onclick=next;
   $("#auto").onclick=()=>{ autoplay=!autoplay; $("#auto").classList.toggle("on",autoplay); };
   $("#shuf").onclick=()=>{ shuffle=!shuffle; $("#shuf").classList.toggle("on",shuffle); };
+
+  // overflow menu (···) toggle + close on outside click / Escape
+  $("#moreBtn").onclick=(e)=>{ e.stopPropagation(); toggleMenu(); };
+  document.addEventListener("click",(e)=>{ if(!$("#actMenu").hidden && !e.target.closest(".more")) closeMenu(); });
+  document.addEventListener("keydown",(e)=>{ if(e.key==="Escape") closeMenu(); });
 
   // search
   $("#q").oninput=e=>{ query=e.target.value; render(); };
