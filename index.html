@@ -49,19 +49,29 @@
   .row{display:grid;grid-template-columns:52px 30px 1fr auto;align-items:center;gap:12px;
        padding:9px 10px;border-radius:var(--hd1);cursor:default;border:2px solid transparent;}
   .row + .row{margin-top:2px;}
-  .row:hover{background:#ece3d0;}
+  .row:hover:not(.active){background:var(--rot);color:#fff;border-color:var(--ink);}
   .row.extern{opacity:.72;}
   .row.extern:hover{opacity:1;}
-  .row.active{background:var(--rot);color:#fff;border-color:var(--ink);}
-  .row.active .artist,.row.active .sid{color:#ffd9d6;}
-  .row.active .tag{border-color:#fff;color:#fff;}
+  /* active (currently playing): red text + red icons on the light paper background */
+  .row.active{background:var(--paper2);color:var(--rot);border-color:var(--rot);}
+  .row.active .artist,.row.active .sid{color:var(--rot);}
+  .row.active .tag{border-color:var(--rot);color:var(--rot);}
+  /* hover on a NON-active row: red fill, white text + white icons */
+  .row:hover:not(.active) .artist,.row:hover:not(.active) .sid{color:#fff;}
+  .row:hover:not(.active) .tag{border-color:#fff;color:#fff;}
+  .row:hover:not(.active) .note span,.row:hover:not(.active) .artist span{color:#fff!important;}
 
   .pbtn{width:46px;height:46px;border-radius:50%;border:3px solid var(--ink);background:var(--paper2);
     display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink);padding:0;}
   .pbtn:hover{background:#ece3d0;}
   .pbtn.play{background:var(--rot);color:#fff;}
   .pbtn.play:hover{background:var(--rot-d);}
-  .row.active .pbtn.play{background:#1a1a1a;}
+  /* active/playing song: red circle, white icon; only the circle's BORDER changes */
+  .row.active .pbtn.play{background:var(--rot);color:#fff;border-color:var(--rot);}
+  /* hover on a NON-active row -> white play button with red icon */
+  .row:hover:not(.active) .pbtn{background:#fff;color:var(--rot);border-color:var(--ink);}
+  .row:hover:not(.active) .pbtn.play{background:#fff;color:var(--rot);border-color:var(--ink);}
+  .row:hover:not(.active) .num{color:#fff;}
   .pbtn:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(216,53,43,.4);}
   .pbtn svg{width:20px;height:20px;fill:currentColor;}
 
@@ -78,7 +88,8 @@
   .right{display:flex;align-items:center;gap:10px;justify-self:end;}
   .ext{font-size:12px;color:var(--rot);text-decoration:none;border-bottom:2px solid var(--rot);
     padding-bottom:1px;white-space:nowrap;}
-  .row.active .ext{color:#fff;border-color:#fff;}
+  .row.active .ext{color:var(--rot);border-color:var(--rot);}
+  .row:hover:not(.active) .ext{color:#fff;border-color:#fff;}
   .ext:hover{color:var(--rot-d);}
   .stars{display:flex;gap:3px;}
   .star{width:30px;height:30px;font-family:var(--font);font-size:13px;cursor:pointer;padding:0;
@@ -90,20 +101,22 @@
   .row.active .star.sel{background:#1a1a1a;color:#fff;}
   .star:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(216,53,43,.4);}
   .empty{text-align:center;color:var(--muted);padding:40px 0;font-size:16px;}
-  .ytbtn{font-family:var(--font);font-size:12px;cursor:pointer;color:var(--rot);background:var(--paper2);
-    border:2px solid var(--rot);border-radius:var(--hd2);padding:4px 9px;white-space:nowrap;}
-  .ytbtn:hover{background:var(--rot);color:#fff;}
-  .row.active .ytbtn{color:#fff;border-color:#fff;background:transparent;}
-  .row.active .ytbtn:hover{background:#fff;color:var(--rot);}
-  /* share + fcsp link buttons (replace the old Oi! button) */
+  .ytbtn{font-family:var(--font);font-size:12px;cursor:pointer;color:var(--ink);background:var(--paper2);
+    border:2px solid var(--ink);border-radius:var(--hd2);padding:4px 9px;white-space:nowrap;}
+  .ytbtn:hover{background:var(--rot);color:#fff;border-color:var(--rot);}
+  /* share + fcsp link buttons — same look as the YouTube button: black default, red on hover */
   .shr,.fcsp{font-family:var(--font);font-size:12px;cursor:pointer;color:var(--ink);background:var(--paper2);
     border:2px solid var(--ink);border-radius:var(--hd2);padding:4px 9px;white-space:nowrap;text-decoration:none;display:inline-flex;align-items:center;gap:4px;}
-  .shr:hover,.fcsp:hover{background:var(--ink);color:var(--paper2);}
-  .fcsp{color:var(--rot);border-color:var(--rot);}
-  .fcsp:hover{background:var(--rot);color:#fff;}
-  .shr.ok{background:var(--rot);color:#fff;border-color:var(--ink);}
-  .row.active .shr,.row.active .fcsp{border-color:#fff;color:#fff;}
-  .row.active .fcsp:hover,.row.active .shr:hover{background:#fff;color:var(--rot);}
+  .shr:hover,.fcsp:hover{background:var(--rot);color:#fff;border-color:var(--rot);}
+  .shr.ok{background:var(--rot);color:#fff;border-color:var(--rot);}
+  /* active/playing row: buttons go red (border + text/icon) to match the red row text */
+  .row.active .shr,.row.active .fcsp,.row.active .ytbtn{color:var(--rot);border-color:var(--rot);background:var(--paper2);}
+  .row.active .shr:hover,.row.active .fcsp:hover,.row.active .ytbtn:hover{background:var(--rot);color:#fff;border-color:var(--rot);}
+  /* hover on a NON-active row (red background): white border + white text so they stand out */
+  .row:hover:not(.active) .shr,.row:hover:not(.active) .fcsp,.row:hover:not(.active) .ytbtn{
+    color:#fff;border-color:#fff;background:transparent;}
+  .row:hover:not(.active) .shr:hover,.row:hover:not(.active) .fcsp:hover,.row:hover:not(.active) .ytbtn:hover{
+    background:#fff;color:var(--rot);border-color:#fff;}
   /* control button bar (replaces the order dropdown + KI tabs) */
   .btnbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
   .btnbar button{font-family:var(--font);font-size:14px;padding:8px 15px;background:var(--paper2);
@@ -334,6 +347,14 @@
     $("#npt").textContent=s.t;
     $("#npa").textContent=s.a+" · "+(s.ki?"mit KI":"ohne KI")+(isPreview(s)?" · 30s Vorschau":"");
     audio.play().catch(()=>{}); render();
+    scrollActiveIntoView();
+  }
+  // keep the currently playing row centered in the list so the user always sees where they are
+  function scrollActiveIntoView(){
+    requestAnimationFrame(()=>{
+      const row=document.querySelector(".row.active");
+      if(row) row.scrollIntoView({block:"center", behavior:"smooth"});
+    });
   }
   function toggle(){ if(cur<0){ const l=playableIdx(); if(l.length) playSong(l[0]); return; }
     if(audio.paused) audio.play().catch(()=>{}); else audio.pause(); }
@@ -429,10 +450,12 @@
     if(songs[i].ki){ inclKI=true; $("#kiTog").classList.add("on"); }
     fNeu=false; fBest=false; $("#fNeu").classList.remove("on"); $("#fBest").classList.remove("on");
     render();
-    if(src(songs[i])) playSong(i);                 // native / preview -> play immediately
-    else if(songs[i].yt) openYouTube(i);           // external -> open its inline YouTube pane
-    const row=[...document.querySelectorAll('.row')].find(r=>r.querySelector(`[data-play="${i}"],[data-ext="${i}"]`));
-    if(row) row.scrollIntoView({block:"center"});
+    if(src(songs[i])){ playSong(i); }             // native / preview -> plays and centers itself
+    else {
+      if(songs[i].yt) openYouTube(i);             // external -> open its inline YouTube pane
+      const row=[...document.querySelectorAll('.row')].find(r=>r.querySelector(`[data-ext="${i}"]`));
+      if(row) row.scrollIntoView({block:"center"});
+    }
   })();
 </script>
 </body>
