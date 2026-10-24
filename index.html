@@ -409,6 +409,8 @@
   audio.addEventListener("play", ()=>{ $("#pp").innerHTML=PAUSE; render(); });
   audio.addEventListener("pause", ()=>{ $("#pp").innerHTML=PLAY; render(); });
   audio.addEventListener("ended", ()=>{ if(autoplay) next(); });
+  // if a source fails to load (e.g. an expired iTunes preview / CORS), don't stall the queue
+  audio.addEventListener("error", ()=>{ if(autoplay && cur>=0) next(); });
   audio.addEventListener("timeupdate", ()=>{
     if(audio.duration){ $("#fill").style.width=(audio.currentTime/audio.duration*100)+"%";
       $("#cur").textContent=mmss(audio.currentTime); $("#dur").textContent=mmss(audio.duration); }
